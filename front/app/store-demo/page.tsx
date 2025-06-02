@@ -4,6 +4,7 @@ import { useAuthStore, useUIStore, useDataStore } from '@/stores'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useLoading } from '@/hooks/use-loading'
 import ProtectedRoute from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/layout'
 import { useState } from 'react'
 
 export default function StoreDemo() {
@@ -58,12 +59,11 @@ export default function StoreDemo() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">
-              Zustand Store Demo
-            </h1>
+      <DashboardLayout>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">
+            Zustand Store Demo
+          </h1>
 
             {/* Auth Store Demo */}
             <div className="bg-white overflow-hidden shadow rounded-lg mb-6">
@@ -199,15 +199,14 @@ export default function StoreDemo() {
               </div>
             </div>
 
-            {/* Sidebar State Indicator */}
-            {sidebarOpen && (
-              <div className="fixed top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg">
-                Sidebar is open! (This is just a demo indicator)
-              </div>
-            )}
-          </div>
+          {/* Sidebar State Indicator */}
+          {sidebarOpen && (
+            <div className="fixed top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg">
+              Sidebar is open! (This is just a demo indicator)
+            </div>
+          )}
         </div>
-      </div>
+      </DashboardLayout>
     </ProtectedRoute>
   )
 } 
