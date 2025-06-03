@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/animate-ui/radix/dropdown-menu'
+import DashBackground from './dashBackground'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -130,7 +131,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </div>
               </TransitionChild>
               {/* Sidebar component, swap this element with another sidebar if you like */}
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-2 ring-1 ring-white/10">
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-2 ring-1 ring-white/10" style={{ backgroundColor: '#070808' }}>
                 <div className="flex h-16 shrink-0 items-center">
                   <Link href="/dashboard">
                     <svg 
@@ -198,7 +199,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6" style={{ backgroundColor: '#070808' }}>
             <div className="flex h-16 shrink-0 items-center">
               <Link href="/dashboard">
                 <svg 
@@ -260,7 +261,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </div>
 
-        <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-gray-900 px-4 py-4 shadow-xs sm:px-6 lg:hidden">
+        <DashBackground />
+
+        <div className="sticky top-0 z-40 flex items-center gap-x-6 px-4 py-4 shadow-xs sm:px-6 lg:hidden" style={{ backgroundColor: '#070808' }}>
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden">
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon aria-hidden="true" className="size-6" />
@@ -269,8 +272,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <UserProfileButton />
         </div>
 
-        <main className="py-10 lg:pl-72">
-          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <main className="py-10 lg:pl-72 relative min-h-screen">
+          <div className="px-4 sm:px-6 lg:px-8 relative z-10">{children}</div>
         </main>
       </div>
     </>
