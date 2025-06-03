@@ -16,35 +16,7 @@ export default function Dashboard() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 Welcome to your Dashboard!
               </h2>
-              <p className="text-gray-600 mb-6">
-                You are successfully authenticated with Azure SSO.
-              </p>
               
-              {session?.user && (
-                <div className="bg-white p-6 rounded-lg shadow max-w-md mx-auto">
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    User Information
-                  </h3>
-                  <div className="space-y-2 text-left">
-                    {session.user.name && (
-                      <p><strong>Name:</strong> {session.user.name}</p>
-                    )}
-                    {session.user.email && (
-                      <p><strong>Email:</strong> {session.user.email}</p>
-                    )}
-                    {session.user.image && (
-                      <div className="flex items-center space-x-2">
-                        <strong>Avatar:</strong>
-                        <img
-                          src={session.user.image}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
