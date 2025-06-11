@@ -106,10 +106,10 @@ type MotionHighlightProps<T extends string> = React.ComponentProps<'div'> &
     | UncontrolledChildrenModeMotionHighlightProps<T>
   );
 
-function MotionHighlight<T extends string>({
-  ref,
-  ...props
-}: MotionHighlightProps<T>) {
+function MotionHighlight<T extends string>(
+  props: MotionHighlightProps<T> & { ref?: React.Ref<HTMLDivElement> }
+) {
+  const { ref, ...restProps } = props;
   const {
     children,
     value,
