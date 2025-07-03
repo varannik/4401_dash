@@ -1,8 +1,61 @@
 {
-  "dependencies": {
-    "@azure/msal-node": "^3.6.0",
-    "recharts": "^2.15.3",
-    "swr": "^2.3.3",
-    "tedious": "^18.6.1"
-  }
-}
+  "name": "realtime-monitoring-dashboard",
+  "version": "1.0.0",
+  "description": "Real-time monitoring dashboard with multi-cloud support (Azure & AWS)",
+  "private": true,
+  "workspaces": [
+    "dashboard",
+    "data-ingestion",
+    "data-processing",
+    "anomaly-detection",
+    "rag-system"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:dashboard\" \"npm run dev:services\"",
+    "dev:dashboard": "cd dashboard && npm run dev",
+    "dev:services": "docker-compose up -d",
+    "build": "npm run build:dashboard",
+    "build:dashboard": "cd dashboard && npm run build",
+    "start": "npm run start:dashboard",
+    "start:dashboard": "cd dashboard && npm run start",
+    "test": "npm run test:all",
+    "test:all": "npm run test:dashboard && npm run test:services",
+    "test:dashboard": "cd dashboard && npm test",
+    "test:services": "python -m pytest",
+    "lint": "npm run lint:dashboard && npm run lint:python",
+    "lint:dashboard": "cd dashboard && npm run lint",
+    "lint:python": "flake8 . --exclude=node_modules,venv,.git",
+    "format": "npm run format:dashboard && npm run format:python",
+    "format:dashboard": "cd dashboard && npm run format",
+    "format:python": "black . --exclude='/(node_modules|venv|.git)/'",
+    "setup": "npm install && pip install -r requirements.txt",
+    "clean": "npm run clean:dashboard && docker-compose down",
+    "clean:dashboard": "cd dashboard && npm run clean",
+    "deploy:azure": "cd infrastructure/azure && terraform apply",
+    "deploy:aws": "cd infrastructure/aws && terraform apply",
+    "docs": "cd docs && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "keywords": [
+    "real-time",
+    "monitoring",
+    "dashboard",
+    "azure",
+    "aws",
+    "kafka",
+    "nextjs",
+    "anomaly-detection",
+    "rag",
+    "iot"
+  ]
+} 

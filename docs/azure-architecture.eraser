@@ -1,0 +1,208 @@
+// Real-Time Monitoring Dashboard - Azure Ecosystem Architecture
+// Generated for app.eraser.io
+
+title Real-Time Monitoring Dashboard - Azure Architecture
+
+// Data Sources
+IoT Devices [icon: iot]
+API Endpoints [icon: api]
+CSV Files [icon: file]
+
+// Azure Data Ingestion Layer
+Azure IoT Hub [icon: azure-iot-hub, color: blue]
+Azure Event Hubs [icon: azure-event-hubs, color: blue] 
+Azure Data Factory [icon: azure-data-factory, color: blue]
+Azure Blob Storage [icon: azure-blob-storage, color: blue]
+
+// Container Services
+Azure Container Registry [icon: azure-container-registry, color: blue]
+Azure Container Apps Environment [icon: azure-container-apps, color: blue]
+
+// Application Services
+Data Ingestion Service [icon: container, color: green]
+Data Processing Service [icon: container, color: green] 
+Anomaly Detection Service [icon: container, color: orange]
+RAG Error System [icon: container, color: red]
+
+// Azure Databases
+Azure SQL Database (Staging) [icon: azure-sql-database, color: blue]
+Azure SQL Database (Final) [icon: azure-sql-database, color: blue]
+Azure Cosmos DB (Anomaly) [icon: azure-cosmos-db, color: blue]
+Azure Cosmos DB (Knowledge) [icon: azure-cosmos-db, color: blue]
+
+// Azure AI/ML Services
+Azure Machine Learning [icon: azure-machine-learning, color: purple]
+Azure OpenAI Service [icon: azure-openai, color: purple]
+Azure Cognitive Search [icon: azure-cognitive-search, color: purple]
+
+// Frontend & Monitoring
+Azure Static Web Apps [icon: azure-static-web-apps, color: blue]
+Next.js Dashboard [icon: react, color: cyan]
+Azure Application Insights [icon: azure-application-insights, color: blue]
+Azure Monitor [icon: azure-monitor, color: blue]
+
+// Security & Management
+Azure Key Vault [icon: azure-key-vault, color: blue]
+Azure Active Directory [icon: azure-active-directory, color: blue]
+
+// Monitoring Stack
+Prometheus [icon: prometheus, color: orange]
+Grafana [icon: grafana, color: orange]
+
+// Data Flow Connections - Step 1: Data Ingestion
+IoT Devices --> Azure IoT Hub: Real-time telemetry
+API Endpoints --> Data Ingestion Service: Batch data
+CSV Files --> Data Ingestion Service: File upload
+
+Azure IoT Hub --> Azure Event Hubs: IoT events
+Data Ingestion Service --> Azure Event Hubs: Processed events
+Azure Event Hubs --> Data Processing Service: Event stream
+
+// Step 1.1 & 1.2: Storage in Staging DB
+Data Ingestion Service --> Azure SQL Database (Staging): Store incoming data
+Data Processing Service --> Azure SQL Database (Staging): Validated data
+
+// Step 2: Dashboard Integration
+Azure SQL Database (Staging) --> Next.js Dashboard: Real-time data
+Data Processing Service --> Next.js Dashboard: Live updates
+
+// Step 3: Missing Value Detection
+Data Processing Service --> Azure Cosmos DB (Anomaly): Missing values
+Azure Cosmos DB (Anomaly) --> Next.js Dashboard: Anomaly alerts
+
+// Step 4: Clean Data Processing
+Data Processing Service --> Azure SQL Database (Final): Clean data
+
+// Step 5: Anomaly Detection (2-step process)
+Azure SQL Database (Final) --> Anomaly Detection Service: Data validation
+
+// Step 5.1: Heuristic Rules
+Anomaly Detection Service --> Anomaly Detection Service: Heuristic analysis
+
+// Step 5.2: Machine Learning
+Anomaly Detection Service --> Azure Machine Learning: ML inference
+Azure Machine Learning --> Anomaly Detection Service: Anomaly scores
+
+// Error Routing
+Anomaly Detection Service --> RAG Error System: Detected anomalies
+Anomaly Detection Service --> Azure SQL Database (Final): Clean data
+
+// Step 6: RAG Error Reporting System
+RAG Error System --> Azure Cognitive Search: Knowledge search
+Azure Cognitive Search --> Azure Cosmos DB (Knowledge): Search index
+RAG Error System --> Azure OpenAI Service: Context analysis
+Azure OpenAI Service --> RAG Error System: Generated insights
+
+// Error Storage and Reporting
+RAG Error System --> Azure Cosmos DB (Anomaly): Formatted errors
+Azure Cosmos DB (Anomaly) --> Next.js Dashboard: Error reports
+
+// Step 7: Expert Review
+Next.js Dashboard --> Azure SQL Database (Final): Manual corrections
+Next.js Dashboard --> Azure SQL Database (Final): Approved data
+
+// Infrastructure & Deployment
+Azure Container Registry --> Data Ingestion Service: Container image
+Azure Container Registry --> Data Processing Service: Container image  
+Azure Container Registry --> Anomaly Detection Service: Container image
+Azure Container Registry --> RAG Error System: Container image
+
+Azure Container Apps Environment --> Data Ingestion Service: Hosting
+Azure Container Apps Environment --> Data Processing Service: Hosting
+Azure Container Apps Environment --> Anomaly Detection Service: Hosting
+Azure Container Apps Environment --> RAG Error System: Hosting
+
+Azure Static Web Apps --> Next.js Dashboard: Hosting
+
+// Security & Configuration
+Azure Key Vault --> Data Ingestion Service: Secrets
+Azure Key Vault --> Anomaly Detection Service: API keys
+Azure Key Vault --> RAG Error System: LLM credentials
+
+Azure Active Directory --> Next.js Dashboard: Authentication
+Azure Active Directory --> Azure Container Apps Environment: Identity
+
+// Monitoring & Observability
+Data Ingestion Service --> Azure Application Insights: Telemetry
+Data Processing Service --> Azure Application Insights: Telemetry
+Anomaly Detection Service --> Azure Application Insights: Telemetry
+RAG Error System --> Azure Application Insights: Telemetry
+
+Azure Application Insights --> Azure Monitor: Aggregated metrics
+Azure Monitor --> Next.js Dashboard: System health
+
+// Additional Monitoring
+Data Ingestion Service --> Prometheus: Custom metrics
+Data Processing Service --> Prometheus: Custom metrics
+Anomaly Detection Service --> Prometheus: Custom metrics
+RAG Error System --> Prometheus: Custom metrics
+
+Prometheus --> Grafana: Metrics visualization
+Grafana --> Next.js Dashboard: Embedded dashboards
+
+// Storage Integrations
+Azure Data Factory --> Azure Blob Storage: Batch processing
+Azure Blob Storage --> Data Ingestion Service: File processing
+
+// Groups for better organization
+group "Data Sources" {
+  IoT Devices
+  API Endpoints  
+  CSV Files
+}
+
+group "Azure Ingestion Layer" {
+  Azure IoT Hub
+  Azure Event Hubs
+  Azure Data Factory
+  Azure Blob Storage
+}
+
+group "Application Services" {
+  Data Ingestion Service
+  Data Processing Service
+  Anomaly Detection Service
+  RAG Error System
+}
+
+group "Azure Data Layer" {
+  Azure SQL Database (Staging)
+  Azure SQL Database (Final)
+  Azure Cosmos DB (Anomaly)
+  Azure Cosmos DB (Knowledge)
+}
+
+group "Azure AI/ML Services" {
+  Azure Machine Learning
+  Azure OpenAI Service
+  Azure Cognitive Search
+}
+
+group "Frontend & Dashboard" {
+  Azure Static Web Apps
+  Next.js Dashboard
+}
+
+group "Azure Infrastructure" {
+  Azure Container Registry
+  Azure Container Apps Environment
+  Azure Key Vault
+  Azure Active Directory
+}
+
+group "Monitoring & Observability" {
+  Azure Application Insights
+  Azure Monitor
+  Prometheus
+  Grafana
+}
+
+// Styling
+style "Data Sources" fill: #e3f2fd
+style "Azure Ingestion Layer" fill: #e8f5e8  
+style "Application Services" fill: #fff3e0
+style "Azure Data Layer" fill: #f3e5f5
+style "Azure AI/ML Services" fill: #fce4ec
+style "Frontend & Dashboard" fill: #e0f2f1
+style "Azure Infrastructure" fill: #e1f5fe
+style "Monitoring & Observability" fill: #fff8e1 
