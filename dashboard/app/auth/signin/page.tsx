@@ -32,7 +32,7 @@ export default function SignIn() {
   const handleSignIn = async () => {
     setLoading(true)
     try {
-      await signIn("azure-ad", { callbackUrl: "/" })
+      await signIn("azure-ad", { callbackUrl: "/dashboard" })
     } catch (error) {
       console.error("Sign in error:", error)
     } finally {

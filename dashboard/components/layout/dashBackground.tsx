@@ -15,13 +15,6 @@ export default function DashBackground() {
           z-index: 1;
         }
 
-        @media (min-width: 1024px) {
-          .dash-background {
-            left: 18rem;
-            width: calc(100% - 18rem);
-          }
-        }
-
         .light {
           position: absolute;
           width: 0px;
