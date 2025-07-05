@@ -2,13 +2,13 @@
 
 import ProtectedRoute from "@/components/auth/protected-route"
 import DashboardLayout from "@/components/layout/mainLayoutDash"
-import { AnalyticsView } from "@/components/dashboard/views"
+import { MonitoringDashboard } from "../../../components/dashboard/MonitoringDashboard"
 
-export default function AnalyticsPage() {
+export default function MonitoringPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <AnalyticsView />
+        <MonitoringDashboard />
       </DashboardLayout>
     </ProtectedRoute>
   )
