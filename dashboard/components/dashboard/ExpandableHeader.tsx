@@ -17,6 +17,8 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react'
+import AuthButton from '@/components/auth/auth-button'
+import UserProfileButton from '@/components/auth/UserProfileButton'
 
 const StatusIndicator = ({ type, label, count = 0 }: { type: 'success' | 'warning' | 'error' | 'info', label: string, count?: number }) => {
   const colors = {
@@ -70,7 +72,7 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
   }
 
   return (
-    <div className={`bg-black/20 backdrop-blur-sm rounded-lg transition-all duration-300 overflow-hidden ${
+    <div className={`bg-black/20 backdrop-blur-sm rounded-b-lg transition-all duration-300 overflow-hidden ${
       isExpanded ? 'shadow-2xl' : 'shadow-lg'
     }`}>
       {/* Main Header Bar */}
@@ -99,22 +101,11 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
 
       {/* Expandable Navigation Content */}
       <div className={`transition-all duration-300 ${
-        isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-      }`}>
-        <div className="border-t border-white/20 bg-white/10 backdrop-blur-lg">
-          <div className="p-6">
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">44</span>
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white">Industrial Monitoring</h2>
-                <p className="text-sm text-white/80">Carbon Capture & Storage Dashboard</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        isExpanded ? 'max-h-[90vh] opacity-100' : 'max-h-0 opacity-0'
+      } overflow-y-auto w-full`}>
+        <div className="border-t border-white/20 bg-white/10 backdrop-blur-lg w-full">
+          <div className="p-4 sm:p-6 w-full">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 w-full">
               {/* Navigation */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Navigation</h3>
@@ -166,22 +157,8 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
               {/* User Profile */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Account</h3>
-                <div className="p-4 rounded-lg border border-white/20 bg-white/10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-white">System Admin</div>
-                      <div className="text-sm text-white/70">admin@44.01.com</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-white/20">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/70">Status</span>
-                      <span className="text-green-400 font-medium">Active</span>
-                    </div>
-                  </div>
+                <div className="p-4 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+                  <UserProfileButton />
                 </div>
               </div>
             </div>

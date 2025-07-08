@@ -98,17 +98,36 @@ export function MonitoringDashboard() {
     setExpandedWidget(null)
   }
 
+  // Percentage-based positions and sizes for widgets (relative to background image)
+  const widgetStyles = {
+    'plant-overview': { left: '8%', top: '35%', width: '22%', height: '18%' },
+    'dac': { left: '45%', top: '15%', width: '20%', height: '15%' },
+    'commercial': { left: '70%', top: '13%', width: '25%', height: '22%' },
+    'energy': { left: '8%', top: '75%', width: '22%', height: '20%' },
+    'battery': { left: '65%', top: '50%', width: '16%', height: '13%' },
+    'mmrv': { left: '45%', top: '40%', width: '18%', height: '13%' },
+    'carbon-certified': { left: '62%', top: '70%', width: '11%', height: '10%' },
+    'carbon-credits': { left: '80%', top: '70%', width: '11%', height: '10%' },
+  }
+
   return (
-    <div className="min-h-screen relative">
-      {/* Main Dashboard - Absolute positioned widgets */}
-      <div className="relative w-full h-screen">
-        
+    <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="relative w-full max-w-screen-2xl"
+        style={{
+          aspectRatio: '16 / 9',
+          backgroundImage: 'url(/dashboard-bg.jpg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+        }}
+      >
         {/* Plant Overview */}
-        <ExpandableWidget 
-          title="Plant Overview" 
-          icon={Gauge} 
-          className="absolute w-80 h-64" 
-          style={{ top: '280px', left: '80px' }}
+        <ExpandableWidget
+          title="Plant Overview"
+          icon={Gauge}
+          className="absolute"
+          style={widgetStyles['plant-overview']}
           onClick={() => expandWidget('plant-overview')}
           isExpanded={expandedWidget === 'plant-overview'}
           onZoomOut={zoomOutWidget}
@@ -129,11 +148,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* DAC */}
-        <ExpandableWidget 
-          title="DAC" 
-          icon={Globe} 
-          className="absolute w-72 h-56" 
-          style={{ top: '120px', left: '500px' }}
+        <ExpandableWidget
+          title="DAC"
+          icon={Globe}
+          className="absolute"
+          style={widgetStyles['dac']}
           onClick={() => expandWidget('dac')}
           isExpanded={expandedWidget === 'dac'}
           onZoomOut={zoomOutWidget}
@@ -153,11 +172,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* Commercial Revenue */}
-        <ExpandableWidget 
-          title="Commercial" 
-          icon={BarChart3} 
-          className="absolute w-96 h-80" 
-          style={{ top: '100px', right: '80px' }}
+        <ExpandableWidget
+          title="Commercial"
+          icon={BarChart3}
+          className="absolute"
+          style={widgetStyles['commercial']}
           onClick={() => expandWidget('commercial')}
           isExpanded={expandedWidget === 'commercial'}
           onZoomOut={zoomOutWidget}
@@ -169,11 +188,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* Energy */}
-        <ExpandableWidget 
-          title="Energy" 
-          icon={Zap} 
-          className="absolute w-80 h-72" 
-          style={{ bottom: '80px', left: '80px' }}
+        <ExpandableWidget
+          title="Energy"
+          icon={Zap}
+          className="absolute"
+          style={widgetStyles['energy']}
           onClick={() => expandWidget('energy')}
           isExpanded={expandedWidget === 'energy'}
           onZoomOut={zoomOutWidget}
@@ -194,11 +213,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* Battery */}
-        <ExpandableWidget 
-          title="Battery" 
-          icon={Battery} 
-          className="absolute w-64 h-48" 
-          style={{ top: '380px', right: '250px' }}
+        <ExpandableWidget
+          title="Battery"
+          icon={Battery}
+          className="absolute"
+          style={widgetStyles['battery']}
           onClick={() => expandWidget('battery')}
           isExpanded={expandedWidget === 'battery'}
           onZoomOut={zoomOutWidget}
@@ -214,11 +233,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* MMRV */}
-        <ExpandableWidget 
-          title="MMRV" 
-          icon={Thermometer} 
-          className="absolute w-72 h-56" 
-          style={{ top: '320px', left: '450px' }}
+        <ExpandableWidget
+          title="MMRV"
+          icon={Thermometer}
+          className="absolute"
+          style={widgetStyles['mmrv']}
           onClick={() => expandWidget('mmrv')}
           isExpanded={expandedWidget === 'mmrv'}
           onZoomOut={zoomOutWidget}
@@ -235,11 +254,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* Carbon Certified */}
-        <ExpandableWidget 
-          title="Carbon Certified" 
-          icon={CheckCircle} 
-          className="absolute w-44 h-40" 
-          style={{ top: '500px', right: '280px' }}
+        <ExpandableWidget
+          title="Carbon Certified"
+          icon={CheckCircle}
+          className="absolute"
+          style={widgetStyles['carbon-certified']}
           onClick={() => expandWidget('carbon-certified')}
           isExpanded={expandedWidget === 'carbon-certified'}
           onZoomOut={zoomOutWidget}
@@ -253,11 +272,11 @@ export function MonitoringDashboard() {
         </ExpandableWidget>
 
         {/* Carbon Credits */}
-        <ExpandableWidget 
-          title="Carbon Credits" 
-          icon={TrendingUp} 
-          className="absolute w-44 h-40" 
-          style={{ top: '500px', right: '80px' }}
+        <ExpandableWidget
+          title="Carbon Credits"
+          icon={TrendingUp}
+          className="absolute"
+          style={widgetStyles['carbon-credits']}
           onClick={() => expandWidget('carbon-credits')}
           isExpanded={expandedWidget === 'carbon-credits'}
           onZoomOut={zoomOutWidget}

@@ -1,16 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession, signOut } from 'next-auth/react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/animate-ui/radix/dropdown-menu'
-import MonitoringBackground from './monitoringBackground'
+import UserProfileButton from '@/components/auth/UserProfileButton'
 import { ExpandableHeader } from '@/components/dashboard/ExpandableHeader'
 
 interface DashboardLayoutProps {
@@ -18,63 +9,32 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { data: session } = useSession()
   const [isHeaderExpanded, setIsHeaderExpanded] = useState(false)
-
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' })
-  }
 
   const toggleHeader = () => {
     setIsHeaderExpanded(!isHeaderExpanded)
   }
 
-  const UserProfileButton = ({ className = "" }: { className?: string }) => (
-    <DropdownMenu>
-      <DropdownMenuTrigger className={`flex items-center gap-x-4 text-sm font-semibold text-white hover:bg-gray-800 focus:outline-none ${className}`}>
-        {session?.user?.image ? (
-          <img
-            alt=""
-            src={session.user.image}
-            className="size-8 rounded-full bg-gray-800"
-          />
-        ) : (
-          <div className="size-8 rounded-full bg-gray-600 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">
-              {session?.user?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </span>
-          </div>
-        )}
-        <span className="sr-only">Your profile</span>
-        <span aria-hidden="true" className="hidden lg:inline">
-          {session?.user?.name || 'User'}
-        </span>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {session?.user?.name || 'User'}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {session?.user?.email || 'user@example.com'}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
-          <span>Sign out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-
   return (
-    <div className="min-h-screen">
-      <MonitoringBackground />
-      
+    <div className="min-h-screen relative">
+      {/* Dashboard background image */}
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: -1,
+          backgroundImage: 'url(/dashboard-bg.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+        aria-hidden="true"
+      />
       {/* Expandable Header - consistent across all dashboard pages */}
-      <div className="relative z-40 px-4 sm:px-6 lg:px-8 pt-6">
+      <div className="sticky top-0 z-40 px-0 sm:px-0 lg:px-0 pt-0">
         <ExpandableHeader 
           isExpanded={isHeaderExpanded} 
           onToggle={toggleHeader}
