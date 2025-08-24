@@ -23,7 +23,7 @@ export default function UserProfileButton({ className = "", showNameAndSignOut =
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`w-full flex items-center gap-x-4 text-sm font-semibold text-white rounded-lg transition-colors focus:outline-none ${className}`}
+        className={`w-full flex items-center ${showNameAndSignOut ? 'lg:gap-x-4' : ''} text-sm font-semibold text-white rounded-lg transition-colors focus:outline-none ${className}`}
       >
         {session?.user?.image ? (
           <img

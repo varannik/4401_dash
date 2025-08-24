@@ -21,6 +21,8 @@ import {
 } from 'lucide-react'
 import AuthButton from '@/components/auth/auth-button'
 import UserProfileButton from '@/components/auth/UserProfileButton'
+import AnomalyIcon from './AnomalyIcon'
+import { useAnomalyStore } from '@/stores/anomaly-store'
 // Custom simple tabs implementation
 
 const StatusIndicator = ({ type, label, count = 0 }: { type: 'success' | 'warning' | 'error' | 'info', label: string, count?: number }) => {
@@ -56,6 +58,9 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
   const headerRef = React.useRef<HTMLDivElement>(null)
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
   const [isUpdating, setIsUpdating] = useState(false)
+  
+  // Anomaly store
+  const { unreadCount, isDrawerOpen, toggleDrawer } = useAnomalyStore()
 
   // Handle click outside to close expanded header
   React.useEffect(() => {
@@ -100,34 +105,34 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
   // Define different tab sets for different navigation items
   const tabSets = {
     '/dashboard/realtime': [
-      { name: 'Plant Overview', members: 24, color: 'bg-green-500', href: '/dashboard/realtime?tab=plant-overview' },
-      { name: 'CO2 Injection', members: 18, color: 'bg-blue-500', href: '/dashboard/realtime?tab=co2-injection' },
-      { name: 'Water Injection', members: 12, color: 'bg-cyan-500', href: '/dashboard/realtime?tab=water-injection' },
-      { name: 'Liquid Tracer', members: 16, color: 'bg-purple-500', href: '/dashboard/realtime?tab=liquid-tracer' },
+      { name: 'Plant Overview', href: '/dashboard/realtime?tab=plant-overview' },
+      { name: 'CO2 Injection', href: '/dashboard/realtime?tab=co2-injection' },
+      { name: 'Water Injection', href: '/dashboard/realtime?tab=water-injection' },
+      { name: 'Liquid Tracer', href: '/dashboard/realtime?tab=liquid-tracer' },
     ],
     '/dashboard/analytics': [
-      { name: 'Reports', members: 15, color: 'bg-purple-500', href: '/dashboard/analytics?tab=reports' },
-      { name: 'Insights', members: 22, color: 'bg-indigo-500', href: '/dashboard/analytics?tab=insights' },
-      { name: 'Trends', members: 8, color: 'bg-pink-500', href: '/dashboard/analytics?tab=trends' },
-      { name: 'Forecasts', members: 11, color: 'bg-cyan-500', href: '/dashboard/analytics?tab=forecasts' },
+      { name: 'Reports', href: '/dashboard/analytics?tab=reports' },
+      { name: 'Insights', href: '/dashboard/analytics?tab=insights' },
+      { name: 'Trends', href: '/dashboard/analytics?tab=trends' },
+      { name: 'Forecasts', href: '/dashboard/analytics?tab=forecasts' },
     ],
     '/dashboard/projects': [
-      { name: 'Active', members: 32, color: 'bg-green-500', href: '/dashboard/projects?tab=active' },
-      { name: 'Planning', members: 14, color: 'bg-yellow-500', href: '/dashboard/projects?tab=planning' },
-      { name: 'Completed', members: 28, color: 'bg-blue-500', href: '/dashboard/projects?tab=completed' },
-      { name: 'On Hold', members: 6, color: 'bg-gray-500', href: '/dashboard/projects?tab=onhold' },
+      { name: 'Active', href: '/dashboard/projects?tab=active' },
+      { name: 'Planning', href: '/dashboard/projects?tab=planning' },
+      { name: 'Completed', href: '/dashboard/projects?tab=completed' },
+      { name: 'On Hold', href: '/dashboard/projects?tab=onhold' },
     ],
     '/dashboard/settings': [
-      { name: 'General', members: 8, color: 'bg-slate-500', href: '/dashboard/settings?tab=general' },
-      { name: 'Security', members: 12, color: 'bg-red-500', href: '/dashboard/settings?tab=security' },
-      { name: 'Integrations', members: 16, color: 'bg-purple-500', href: '/dashboard/settings?tab=integrations' },
-      { name: 'Advanced', members: 4, color: 'bg-orange-500', href: '/dashboard/settings?tab=advanced' },
+      { name: 'General', href: '/dashboard/settings?tab=general' },
+      { name: 'Security', href: '/dashboard/settings?tab=security' },
+      { name: 'Integrations', href: '/dashboard/settings?tab=integrations' },
+      { name: 'Advanced', href: '/dashboard/settings?tab=advanced' },
     ],
     '/dashboard/team': [
-      { name: 'Engineering', members: 12, color: 'bg-blue-500', href: '/dashboard/team?tab=engineering' },
-      { name: 'Operations', members: 8, color: 'bg-green-500', href: '/dashboard/team?tab=operations' },
-      { name: 'Analytics', members: 6, color: 'bg-purple-500', href: '/dashboard/team?tab=analytics' },
-      { name: 'Management', members: 4, color: 'bg-orange-500', href: '/dashboard/team?tab=management' },
+      { name: 'Engineering', href: '/dashboard/team?tab=engineering' },
+      { name: 'Operations', href: '/dashboard/team?tab=operations' },
+      { name: 'Analytics', href: '/dashboard/team?tab=analytics' },
+      { name: 'Management', href: '/dashboard/team?tab=management' },
     ],
   }
 
@@ -178,39 +183,47 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
           </div>
         </div>
         
-        {/* Tabs in Header - Hidden on expanded, responsive visibility */}
-        {!isExpanded && (
-          <div className="hidden lg:flex items-center">
-            <div 
-              className="lg:bg-transparent bg-white/10 backdrop-blur-sm lg:border-0 border border-white/20 rounded-lg p-1 flex items-center gap-1"
-              role="tablist"
-              aria-label="Team selection"
-            >
-              {currentTabs.map((tab) => {
-                const tabParam = new URL(tab.href, 'http://localhost').searchParams.get('tab')
-                const currentTab = searchParams.get('tab')
-                const isActiveTab = currentTab === tabParam
-                return (
-                  <Link
-                    key={tab.name}
-                    href={tab.href}
-                    role="tab"
-                    aria-selected={isActiveTab}
-                    aria-controls={`tabpanel-${tab.name.toLowerCase()}`}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
-                      isActiveTab
-                        ? 'text-white bg-white/20'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <div className={`w-2 h-2 rounded-full ${tab.color}`} />
-                    <span className="text-sm font-medium">{tab.name}</span>
-                  </Link>
-                )
-              })}
+        <div className="flex items-center gap-4">
+          {/* Tabs in Header - Hidden on expanded and mobile */}
+          {!isExpanded && (
+            <div className="hidden lg:flex items-center">
+              <div 
+                className="lg:bg-transparent bg-white/10 backdrop-blur-sm lg:border-0 border border-white/20 rounded-lg p-1 flex items-center gap-1"
+                role="tablist"
+                aria-label="Team selection"
+              >
+                {currentTabs.map((tab) => {
+                  const tabParam = new URL(tab.href, 'http://localhost').searchParams.get('tab')
+                  const currentTab = searchParams.get('tab')
+                  const isActiveTab = currentTab === tabParam
+                  return (
+                    <Link
+                      key={tab.name}
+                      href={tab.href}
+                      role="tab"
+                      aria-selected={isActiveTab}
+                      aria-controls={`tabpanel-${tab.name.toLowerCase()}`}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
+                        isActiveTab
+                          ? 'text-white bg-white/20'
+                          : 'text-white/70 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <span className="text-sm font-medium">{tab.name}</span>
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+          
+          {/* Anomaly Icon - Always visible on all screen sizes */}
+          <AnomalyIcon 
+            unreadCount={unreadCount} 
+            onClick={toggleDrawer}
+            isOpen={isDrawerOpen}
+          />
+        </div>
       </div>
 
       {/* Expandable Navigation Content */}
@@ -220,9 +233,9 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
         <div className="border-t border-white/20 bg-white/10 backdrop-blur-lg w-full">
           <div className="p-4 sm:p-6 w-full">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 w-full">
-              {/* Navigation */}
+              {/* Reports */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Navigation</h3>
+                <h3 className="text-lg font-semibold text-white">Reports</h3>
                 <div className="space-y-2">
                   {navigationItems.map((item) => {
                     const isActive = pathname === item.href
@@ -245,9 +258,9 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
                 </div>
               </div>
 
-              {/* Tabs */}
+              {/* Sections */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Tabs</h3>
+                <h3 className="text-lg font-semibold text-white">Sections</h3>
                 <div className="space-y-3">
                   {currentTabs.map((tab) => {
                     const tabParam = new URL(tab.href, 'http://localhost').searchParams.get('tab')
@@ -264,10 +277,8 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
                             : 'border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white'
                         }`}
                       >
-                        <div className={`w-3 h-3 rounded-full ${tab.color}`} />
                         <div className="flex-1 text-left">
                           <div className="font-medium">{tab.name}</div>
-                          <div className="text-sm text-white/70">{tab.members} members</div>
                         </div>
                       </Link>
                     )

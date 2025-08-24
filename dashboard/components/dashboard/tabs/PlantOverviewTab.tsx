@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { CO2FlowChart, WaterFlowChart, TracerFlowChart, PressureGauges, CO2FlowCard, WaterFlowCard, TracerFlowCard, CO2WaterRatioCard } from "../charts"
+import AnomalyDemo from "../AnomalyDemo"
 
 interface PlantMetrics {
   co2Flow: number
@@ -111,6 +112,11 @@ export const PlantOverviewTab = () => {
           data={historicalData} 
           currentValue={metrics.tracerFlow} 
         />
+      </div>
+
+      {/* Anomaly Detection Demo */}
+      <div className="mt-8">
+        <AnomalyDemo />
       </div>
     </div>
   )

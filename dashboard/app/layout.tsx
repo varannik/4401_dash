@@ -7,6 +7,7 @@ import ZustandProvider from "@/components/providers/zustand-provider";
 import Notifications from "@/components/ui/notifications";
 import VantaBackground from "@/components/layout/VantaBackground";
 import ExpandableHeaderWrapper from "@/components/layout/ExpandableHeaderWrapper";
+import AnomalyDrawerProvider from "@/components/dashboard/AnomalyDrawerProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +56,9 @@ export default function RootLayout({
             <main className="relative">
               {children}
             </main>
+            
+            {/* Anomaly Drawer */}
+            <AnomalyDrawerProvider />
             
             <Notifications />
           </ZustandProvider>
