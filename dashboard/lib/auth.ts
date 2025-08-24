@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
       tenantId: process.env.AZURE_AD_TENANT_ID!,
       authorization: {
         params: {
-          scope: "openid profile email User.Read https://database.windows.net/user_impersonation"
+          scope: "openid profile email User.Read"
         }
       }
     }),

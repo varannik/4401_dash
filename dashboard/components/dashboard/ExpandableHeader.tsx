@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { 
   Menu,
   X,
@@ -15,10 +15,13 @@ import {
   ChevronDown,
   User,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Clock,
+  RefreshCw
 } from 'lucide-react'
 import AuthButton from '@/components/auth/auth-button'
 import UserProfileButton from '@/components/auth/UserProfileButton'
+// Custom simple tabs implementation
 
 const StatusIndicator = ({ type, label, count = 0 }: { type: 'success' | 'warning' | 'error' | 'info', label: string, count?: number }) => {
   const colors = {
@@ -48,33 +51,111 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
   isExpanded, 
   onToggle
 }) => {
-  const [activeTeam, setActiveTeam] = useState<string | null>(null)
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const headerRef = React.useRef<HTMLDivElement>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  // Handle click outside to close expanded header
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isExpanded && headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        onToggle()
+      }
+    }
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isExpanded, onToggle])
+
+  // Simulate data updates every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsUpdating(true)
+      
+      // Simulate network delay
+      setTimeout(() => {
+        setLastUpdate(new Date())
+        setIsUpdating(false)
+      }, 200)
+    }, 10000) // Update every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [])
 
   const navigationItems = [
-    { icon: Home, label: 'Overview', href: '/dashboard' },
-    { icon: LayoutDashboard, label: 'Monitoring', href: '/dashboard/monitoring' },
+    { icon: LayoutDashboard, label: 'Real Time', href: '/dashboard/realtime' },
     { icon: BarChart2, label: 'Analytics', href: '/dashboard/analytics' },
     { icon: FolderOpen, label: 'Projects', href: '/dashboard/projects' },
     { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
     { icon: Users, label: 'Team', href: '/dashboard/team' },
   ]
 
-  const teams = [
-    { name: 'Engineering', members: 12, color: 'bg-blue-500' },
-    { name: 'Operations', members: 8, color: 'bg-green-500' },
-    { name: 'Analytics', members: 6, color: 'bg-purple-500' },
-    { name: 'Management', members: 4, color: 'bg-orange-500' },
-  ]
+  // Define different tab sets for different navigation items
+  const tabSets = {
+    '/dashboard/realtime': [
+      { name: 'Plant Overview', members: 24, color: 'bg-green-500', href: '/dashboard/realtime?tab=plant-overview' },
+      { name: 'CO2 Injection', members: 18, color: 'bg-blue-500', href: '/dashboard/realtime?tab=co2-injection' },
+      { name: 'Water Injection', members: 12, color: 'bg-cyan-500', href: '/dashboard/realtime?tab=water-injection' },
+      { name: 'Liquid Tracer', members: 16, color: 'bg-purple-500', href: '/dashboard/realtime?tab=liquid-tracer' },
+    ],
+    '/dashboard/analytics': [
+      { name: 'Reports', members: 15, color: 'bg-purple-500', href: '/dashboard/analytics?tab=reports' },
+      { name: 'Insights', members: 22, color: 'bg-indigo-500', href: '/dashboard/analytics?tab=insights' },
+      { name: 'Trends', members: 8, color: 'bg-pink-500', href: '/dashboard/analytics?tab=trends' },
+      { name: 'Forecasts', members: 11, color: 'bg-cyan-500', href: '/dashboard/analytics?tab=forecasts' },
+    ],
+    '/dashboard/projects': [
+      { name: 'Active', members: 32, color: 'bg-green-500', href: '/dashboard/projects?tab=active' },
+      { name: 'Planning', members: 14, color: 'bg-yellow-500', href: '/dashboard/projects?tab=planning' },
+      { name: 'Completed', members: 28, color: 'bg-blue-500', href: '/dashboard/projects?tab=completed' },
+      { name: 'On Hold', members: 6, color: 'bg-gray-500', href: '/dashboard/projects?tab=onhold' },
+    ],
+    '/dashboard/settings': [
+      { name: 'General', members: 8, color: 'bg-slate-500', href: '/dashboard/settings?tab=general' },
+      { name: 'Security', members: 12, color: 'bg-red-500', href: '/dashboard/settings?tab=security' },
+      { name: 'Integrations', members: 16, color: 'bg-purple-500', href: '/dashboard/settings?tab=integrations' },
+      { name: 'Advanced', members: 4, color: 'bg-orange-500', href: '/dashboard/settings?tab=advanced' },
+    ],
+    '/dashboard/team': [
+      { name: 'Engineering', members: 12, color: 'bg-blue-500', href: '/dashboard/team?tab=engineering' },
+      { name: 'Operations', members: 8, color: 'bg-green-500', href: '/dashboard/team?tab=operations' },
+      { name: 'Analytics', members: 6, color: 'bg-purple-500', href: '/dashboard/team?tab=analytics' },
+      { name: 'Management', members: 4, color: 'bg-orange-500', href: '/dashboard/team?tab=management' },
+    ],
+  }
+
+  // Get current navigation section from pathname
+  const getCurrentNavigationSection = () => {
+    if (pathname.startsWith('/dashboard/realtime')) return '/dashboard/realtime'
+    if (pathname.startsWith('/dashboard/analytics')) return '/dashboard/analytics'
+    if (pathname.startsWith('/dashboard/projects')) return '/dashboard/projects'
+    if (pathname.startsWith('/dashboard/settings')) return '/dashboard/settings'
+    if (pathname.startsWith('/dashboard/team')) return '/dashboard/team'
+    return '/dashboard/realtime' // default
+  }
+
+  // Get current tabs based on navigation section
+  const currentNavigationSection = getCurrentNavigationSection()
+  const currentTabs = tabSets[currentNavigationSection as keyof typeof tabSets] || tabSets['/dashboard/realtime']
 
   const handleNavigationClick = () => {
     onToggle() // Close the menu after navigation
   }
 
   return (
-    <div className={`bg-black/20 backdrop-blur-sm rounded-b-lg transition-all duration-300 overflow-hidden ${
-      isExpanded ? 'shadow-2xl' : 'shadow-lg'
-    }`}>
+    <div 
+      ref={headerRef}
+      className={`bg-black/20 backdrop-blur-sm rounded-b-lg transition-all duration-300 overflow-hidden ${
+        isExpanded ? 'shadow-2xl' : 'shadow-lg'
+      }`}
+    >
       {/* Main Header Bar */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-4">
@@ -90,13 +171,46 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
             )}
           </button>
           <div className="text-2xl font-bold text-white">44.01</div>
+          <div className="flex items-center gap-2 text-white/70 text-sm">
+            <Clock className="w-4 h-4" />
+            <span>Last Update: {lastUpdate.toLocaleTimeString()}</span>
+            {isUpdating && <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />}
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <StatusIndicator type="warning" label="Whats going on" />
-          <StatusIndicator type="error" label="What has gone wrong" />
-          <StatusIndicator type="info" label="Impact" />
-          <StatusIndicator type="success" label="Action to Fix" />
-        </div>
+        
+        {/* Tabs in Header - Hidden on expanded, responsive visibility */}
+        {!isExpanded && (
+          <div className="hidden lg:flex items-center">
+            <div 
+              className="lg:bg-transparent bg-white/10 backdrop-blur-sm lg:border-0 border border-white/20 rounded-lg p-1 flex items-center gap-1"
+              role="tablist"
+              aria-label="Team selection"
+            >
+              {currentTabs.map((tab) => {
+                const tabParam = new URL(tab.href, 'http://localhost').searchParams.get('tab')
+                const currentTab = searchParams.get('tab')
+                const isActiveTab = currentTab === tabParam
+                return (
+                  <Link
+                    key={tab.name}
+                    href={tab.href}
+                    role="tab"
+                    aria-selected={isActiveTab}
+                    aria-controls={`tabpanel-${tab.name.toLowerCase()}`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 ${
+                      isActiveTab
+                        ? 'text-white bg-white/20'
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${tab.color}`} />
+                    <span className="text-sm font-medium">{tab.name}</span>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Expandable Navigation Content */}
@@ -105,7 +219,7 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
       } overflow-y-auto w-full`}>
         <div className="border-t border-white/20 bg-white/10 backdrop-blur-lg w-full">
           <div className="p-4 sm:p-6 w-full">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 w-full">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 w-full">
               {/* Navigation */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Navigation</h3>
@@ -131,74 +245,42 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
                 </div>
               </div>
 
-              {/* Teams */}
+              {/* Tabs */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white">Teams</h3>
+                <h3 className="text-lg font-semibold text-white">Tabs</h3>
                 <div className="space-y-3">
-                  {teams.map((team) => (
-                    <div
-                      key={team.name}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-white/20 hover:bg-white/10 cursor-pointer transition-colors"
-                      onClick={() => setActiveTeam(activeTeam === team.name ? null : team.name)}
-                    >
-                      <div className={`w-3 h-3 rounded-full ${team.color}`} />
-                      <div className="flex-1">
-                        <div className="font-medium text-white">{team.name}</div>
-                        <div className="text-sm text-white/70">{team.members} members</div>
-                      </div>
-                      <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${
-                        activeTeam === team.name ? 'rotate-180' : ''
-                      }`} />
-                    </div>
-                  ))}
+                  {currentTabs.map((tab) => {
+                    const tabParam = new URL(tab.href, 'http://localhost').searchParams.get('tab')
+                    const currentTab = searchParams.get('tab')
+                    const isActiveTab = currentTab === tabParam
+                    return (
+                      <Link
+                        key={tab.name}
+                        href={tab.href}
+                        onClick={handleNavigationClick}
+                        className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 ${
+                          isActiveTab
+                            ? 'border-white/40 bg-white/20 text-white'
+                            : 'border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <div className={`w-3 h-3 rounded-full ${tab.color}`} />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">{tab.name}</div>
+                          <div className="text-sm text-white/70">{tab.members} members</div>
+                        </div>
+                      </Link>
+                    )
+                  })}
                 </div>
               </div>
 
               {/* User Profile */}
-              <div className="space-y-4">
+              <div className="space-y-4 sm:col-span-2">
                 <h3 className="text-lg font-semibold text-white">Account</h3>
                 <div className="p-4 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition-colors cursor-pointer">
                   <UserProfileButton />
                 </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="mt-6 pt-6 border-t border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Link 
-                  href="/dashboard/analytics"
-                  onClick={handleNavigationClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-500/30 text-blue-200 rounded-lg hover:bg-blue-500/40 transition-colors"
-                >
-                  <BarChart2 className="w-4 h-4" />
-                  <span>Analytics</span>
-                </Link>
-                <Link 
-                  href="/dashboard/settings"
-                  onClick={handleNavigationClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-500/30 text-green-200 rounded-lg hover:bg-green-500/40 transition-colors"
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
-                </Link>
-                <Link 
-                  href="/dashboard/team"
-                  onClick={handleNavigationClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-500/30 text-purple-200 rounded-lg hover:bg-purple-500/40 transition-colors"
-                >
-                  <Users className="w-4 h-4" />
-                  <span>Team</span>
-                </Link>
-                <Link 
-                  href="/dashboard/projects"
-                  onClick={handleNavigationClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-500/30 text-orange-200 rounded-lg hover:bg-orange-500/40 transition-colors"
-                >
-                  <FolderOpen className="w-4 h-4" />
-                  <span>Projects</span>
-                </Link>
               </div>
             </div>
           </div>

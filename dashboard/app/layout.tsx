@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 import AuthSessionProvider from "@/components/providers/session-provider";
 import ZustandProvider from "@/components/providers/zustand-provider";
 import Notifications from "@/components/ui/notifications";
+import VantaBackground from "@/components/layout/VantaBackground";
+import ExpandableHeaderWrapper from "@/components/layout/ExpandableHeaderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,12 +30,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script 
+          src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"
+          strategy="beforeInteractive"
+        />
+        <Script 
+          src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <VantaBackground />
         <AuthSessionProvider>
           <ZustandProvider>
-            {children}
+            {/* Persistent Header across all pages */}
+            <div className="sticky top-0 z-40">
+              <ExpandableHeaderWrapper />
+            </div>
+            
+            {/* Main content */}
+            <main className="relative">
+              {children}
+            </main>
+            
             <Notifications />
           </ZustandProvider>
         </AuthSessionProvider>

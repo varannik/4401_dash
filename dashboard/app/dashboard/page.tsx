@@ -8,7 +8,7 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <OverviewView />
+       hi
       </DashboardLayout>
     </ProtectedRoute>
   )
