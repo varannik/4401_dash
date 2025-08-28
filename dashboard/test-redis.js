@@ -1,3 +1,5 @@
+require('dotenv').config({ path: '.env.local' });
+
 const { createClient } = require('redis');
 
 async function testRedisConnection() {
@@ -41,12 +43,12 @@ async function testRedisConnection() {
     // Test basic operations
     console.log('🧪 Testing basic operations...');
     
-    // Set a test key
-    await client.set('test:connection', 'success', { EX: 10 });
+    // Set a test key with namespaced prefix
+    await client.set('fabric:test:connection', 'success', { EX: 10 });
     console.log('✅ SET operation successful');
     
     // Get the test key
-    const value = await client.get('test:connection');
+    const value = await client.get('fabric:test:connection');
     if (value === 'success') {
       console.log('✅ GET operation successful');
     } else {
@@ -54,7 +56,7 @@ async function testRedisConnection() {
     }
     
     // Clean up
-    await client.del('test:connection');
+    await client.del('fabric:test:connection');
     console.log('✅ DEL operation successful');
     
     // Close connection

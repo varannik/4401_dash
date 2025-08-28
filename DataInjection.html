@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Schema System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .panel {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+
+        .left-panel {
+            background: #f8f9fa;
+            border-right: 2px solid #e9ecef;
+        }
+
+        .right-panel {
+            background: white;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .file-input-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .output {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .api-endpoint {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .method {
+            background: #28a745;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .validation-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-valid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-invalid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Dynamic Schema System</h1>
+            <p>Define your schema in YAML and automatically generate APIs with validation</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="section">
+                    <h3><span class="icon"></span>YAML Schema Configuration</h3>
+                    <textarea id="yamlSchema" placeholder="Enter your YAML schema here...">
+# Example Schema
+name: users
+description: User management schema
+fields:
+  - name: id
+    type: integer
+    required: true
+    description: Unique user identifier
+  - name: username
+    type: string
+    required: true
+    min_length: 3
+    max_length: 50
+    description: User login name
+  - name: email
+    type: string
+    required: true
+    pattern: "^[\\w\\.-]+@[\\w\\.-]+\\.[a-zA-Z]{2,}$"
+    description: User email address
+  - name: age
+    type: integer
+    required: false
+    min_value: 18
+    max_value: 120
+    description: User age
+  - name: created_at
+    type: date
+    required: true
+    description: Account creation date
+  - name: is_active
+    type: boolean
+    required: false
+    default: true
+    description: Account status
+                    </textarea>
+                    <button class="btn" onclick="updateSchema()">🔄 Update Schema</button>
+                    <button class="btn btn-success" onclick="generateSampleCSV()">📄 Generate Sample CSV</button>
+                </div>
+
+                <div class="section">
+                    <h3><span class="icon"></span>CSV File Upload & Validation</h3>
+                    <div class="file-input-container">
+                        <input type="file" id="csvFile" accept=".csv" onchange="handleFileUpload(event)">
+                        📁 Choose CSV File
+                    </div>
+                    <button class="btn btn-success" onclick="validateCSV()">✅ Validate CSV</button>
+                    <button class="btn btn-danger" onclick="clearValidation()">🗑️ Clear Results</button>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section">
+                    <h3><span class="icon"></span>Generated API Endpoints</h3>
+                    <div id="apiEndpoints"></div>
+                </div>
+
+                <div class="section">
+                    <h3><span class="icon"></span>Validation Results</h3>
+                    <div id="validationResults"></div>
+                </div>
+
+                <div class="section">
+                    <h3><span class="icon"></span>Schema Information</h3>
+                    <div class="output" id="schemaOutput"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <script>
+        let currentSchema = null;
+        let csvData = null;
+
+        function updateSchema() {
+            try {
+                const yamlContent = document.getElementById('yamlSchema').value;
+                currentSchema = jsyaml.load(yamlContent);
+                
+                generateAPIEndpoints();
+                displaySchemaInfo();
+                
+                showSuccess('Schema updated successfully! 🎉');
+            } catch (error) {
+                showError('Invalid YAML format: ' + error.message);
+            }
+        }
+
+        function generateAPIEndpoints() {
+            if (!currentSchema) return;
+            
+            const endpointsDiv = document.getElementById('apiEndpoints');
+            const schemaName = currentSchema.name || 'data';
+            
+            const endpoints = [
+                {
+                    method: 'GET',
+                    path: `/api/${schemaName}`,
+                    description: 'Fetch all records with optional filtering'
+                },
+                {
+                    method: 'GET',
+                    path: `/api/${schemaName}/{id}`,
+                    description: 'Fetch a specific record by ID'
+                },
+                {
+                    method: 'POST',
+                    path: `/api/${schemaName}`,
+                    description: 'Create a new record with validation'
+                },
+                {
+                    method: 'PUT',
+                    path: `/api/${schemaName}/{id}`,
+                    description: 'Update an existing record'
+                },
+                {
+                    method: 'DELETE',
+                    path: `/api/${schemaName}/{id}`,
+                    description: 'Delete a record by ID'
+                },
+                {
+                    method: 'POST',
+                    path: `/api/${schemaName}/upload`,
+                    description: 'Upload and validate CSV data'
+                }
+            ];
+
+            endpointsDiv.innerHTML = endpoints.map(endpoint => `
+                <div class="api-endpoint">
+                    <span class="method">${endpoint.method}</span>
+                    <strong>${endpoint.path}</strong>
+                    <div style="margin-top: 5px; font-size: 12px; opacity: 0.9;">
+                        ${endpoint.description}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displaySchemaInfo() {
+            if (!currentSchema) return;
+            
+            const output = document.getElementById('schemaOutput');
+            const info = JSON.stringify(currentSchema, null, 2);
+            output.textContent = info;
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'text/csv') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    Papa.parse(e.target.result, {
+                        header: true,
+                        dynamicTyping: true,
+                        skipEmptyLines: true,
+                        complete: function(results) {
+                            csvData = results.data;
+                            showSuccess(`CSV loaded: ${csvData.length} rows found`);
+                        },
+                        error: function(error) {
+                            showError('Error parsing CSV: ' + error.message);
+                        }
+                    });
+                };
+                reader.readAsText(file);
+            } else {
+                showError('Please select a valid CSV file');
+            }
+        }
+
+        function validateCSV() {
+            if (!currentSchema) {
+                showError('Please update the schema first');
+                return;
+            }
+            
+            if (!csvData) {
+                showError('Please upload a CSV file first');
+                return;
+            }
+
+            const validationResults = validateDataAgainstSchema(csvData, currentSchema);
+            displayValidationResults(validationResults);
+        }
+
+        function validateDataAgainstSchema(data, schema) {
+            const results = {
+                isValid: true,
+                errors: [],
+                warnings: [],
+                validRows: 0,
+                totalRows: data.length,
+                fieldValidation: {}
+            };
+
+            // Check if all required fields exist in CSV
+            const csvHeaders = data.length > 0 ? Object.keys(data[0]) : [];
+            const requiredFields = schema.fields.filter(field => field.required).map(field => field.name);
+            const missingRequired = requiredFields.filter(field => !csvHeaders.includes(field));
+            
+            if (missingRequired.length > 0) {
+                results.isValid = false;
+                results.errors.push(`Missing required fields: ${missingRequired.join(', ')}`);
+            }
+
+            // Validate each row
+            data.forEach((row, rowIndex) => {
+                let rowValid = true;
+                
+                schema.fields.forEach(field => {
+                    const value = row[field.name];
+                    const fieldKey = field.name;
+                    
+                    if (!results.fieldValidation[fieldKey]) {
+                        results.fieldValidation[fieldKey] = { valid: 0, invalid: 0, errors: [] };
+                    }
+
+                    // Check required fields
+                    if (field.required && (value === undefined || value === null || value === '')) {
+                        results.fieldValidation[fieldKey].invalid++;
+                        results.fieldValidation[fieldKey].errors.push(`Row ${rowIndex + 1}: Required field is empty`);
+                        rowValid = false;
+                        return;
+                    }
+
+                    if (value === undefined || value === null || value === '') {
+                        results.fieldValidation[fieldKey].valid++;
+                        return;
+                    }
+
+                    // Type validation
+                    if (!validateFieldType(value, field)) {
+                        results.fieldValidation[fieldKey].invalid++;
+                        results.fieldValidation[fieldKey].errors.push(`Row ${rowIndex + 1}: Invalid ${field.type} value: ${value}`);
+                        rowValid = false;
+                    } else {
+                        results.fieldValidation[fieldKey].valid++;
+                    }
+                });
+
+                if (rowValid) {
+                    results.validRows++;
+                } else {
+                    results.isValid = false;
+                }
+            });
+
+            return results;
+        }
+
+        function validateFieldType(value, field) {
+            switch (field.type) {
+                case 'integer':
+                    const intVal = parseInt(value);
+                    if (isNaN(intVal)) return false;
+                    if (field.min_value !== undefined && intVal < field.min_value) return false;
+                    if (field.max_value !== undefined && intVal > field.max_value) return false;
+                    return true;
+
+                case 'string':
+                    const strVal = String(value);
+                    if (field.min_length !== undefined && strVal.length < field.min_length) return false;
+                    if (field.max_length !== undefined && strVal.length > field.max_length) return false;
+                    if (field.pattern && !new RegExp(field.pattern).test(strVal)) return false;
+                    return true;
+
+                case 'boolean':
+                    return ['true', 'false', '1', '0', 'yes', 'no'].includes(String(value).toLowerCase());
+
+                case 'date':
+                    return !isNaN(Date.parse(value));
+
+                default:
+                    return true;
+            }
+        }
+
+        function displayValidationResults(results) {
+            const resultsDiv = document.getElementById('validationResults');
+            
+            const statusClass = results.isValid ? 'status-valid' : 'status-invalid';
+            const statusText = results.isValid ? '✅ VALID' : '❌ INVALID';
+            
+            let html = `
+                <div class="validation-result">
+                    <div class="status-badge ${statusClass}">${statusText}</div>
+                    <p><strong>Summary:</strong> ${results.validRows}/${results.totalRows} rows valid</p>
+            `;
+
+            if (results.errors.length > 0) {
+                html += `
+                    <div class="error">
+                        <strong>Errors:</strong>
+                        <ul>${results.errors.map(err => `<li>${err}</li>`).join('')}</ul>
+                    </div>
+                `;
+            }
+
+            // Field-level validation details
+            html += '<div style="margin-top: 15px;"><strong>Field Validation Details:</strong></div>';
+            Object.entries(results.fieldValidation).forEach(([field, validation]) => {
+                const fieldStatus = validation.invalid === 0 ? '✅' : '⚠️';
+                html += `
+                    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>${fieldStatus} ${field}:</strong> ${validation.valid} valid, ${validation.invalid} invalid
+                        ${validation.errors.length > 0 ? `
+                            <div style="margin-top: 5px; font-size: 12px; color: #dc3545;">
+                                ${validation.errors.slice(0, 3).join('<br>')}
+                                ${validation.errors.length > 3 ? `<br>... and ${validation.errors.length - 3} more errors` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+
+        function generateSampleCSV() {
+            if (!currentSchema) {
+                showError('Please update the schema first');
+                return;
+            }
+
+            const headers = currentSchema.fields.map(field => field.name);
+            const sampleRow = currentSchema.fields.map(field => {
+                switch (field.type) {
+                    case 'integer': return field.name === 'id' ? '1' : '25';
+                    case 'string': return field.name.includes('email') ? 'user@example.com' : 'sample_value';
+                    case 'boolean': return 'true';
+                    case 'date': return '2024-01-01';
+                    default: return 'sample';
+                }
+            });
+
+            const csv = [headers.join(','), sampleRow.join(',')].join('\\n');
+            
+            // Create and download the sample CSV
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentSchema.name || 'sample'}_template.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Sample CSV template generated and downloaded! 📄');
+        }
+
+        function clearValidation() {
+            document.getElementById('validationResults').innerHTML = '';
+            csvData = null;
+            document.getElementById('csvFile').value = '';
+            showSuccess('Validation results cleared');
+        }
+
+        function showError(message) {
+            const resultsDiv = document.getElementById('validationResults');
+            resultsDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+
+        function showSuccess(message) {
+            const resultsDiv = document.getElementById('validationResults');
+            const existingContent = resultsDiv.innerHTML;
+            resultsDiv.innerHTML = `<div class="success">✅ ${message}</div>` + existingContent;
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                const successDiv = resultsDiv.querySelector('.success');
+                if (successDiv) successDiv.remove();
+            }, 3000);
+        }
+
+        // Initialize with default schema
+        updateSchema();
+    </script>
+</body>
+</html>

@@ -4,7 +4,15 @@ import { RedisAdapter } from "./redis-adapter"
 import { getRedisClient, TokenCache } from "./redis"
 
 export const authOptions: NextAuthOptions = {
-  adapter: RedisAdapter(getRedisClient),
+  adapter: RedisAdapter(getRedisClient, {
+    accountKeyPrefix: "nextauth:account:",
+    accountByUserIdPrefix: "nextauth:account:by-user-id:",
+    emailKeyPrefix: "nextauth:email:",
+    sessionKeyPrefix: "nextauth:session:",
+    sessionByUserIdKeyPrefix: "nextauth:session:by-user-id:",
+    userKeyPrefix: "nextauth:user:",
+    verificationTokenKeyPrefix: "nextauth:token:",
+  }),
   providers: [
     AzureADProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID!,

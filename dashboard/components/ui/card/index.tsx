@@ -23,7 +23,7 @@ const Bento = ({ title, content, borderPreview, children }: BentoProps) => (
                 <div className={styles.title}>{title}</div>
                 <div className={styles.content}>{content}</div>
                 <button className={styles.button}>
-                    <span className={styles.buttonTitle}>Discover</span>
+                   
                     <span className={styles.buttonCircle}></span>
                 </button>
             </div>

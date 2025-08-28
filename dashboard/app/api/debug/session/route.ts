@@ -36,8 +36,14 @@ export async function GET(request: NextRequest) {
       // Get all Redis keys to see what's stored
       try {
         const redis = await getRedisClient()
-        redisKeys = await redis.keys('user:*')
-        console.log('Debug - Redis keys found:', redisKeys)
+        // Get keys from both namespaces
+        const [nextauthKeys, fabricKeys] = await Promise.all([
+          redis.keys('nextauth:*'),
+          redis.keys('fabric:*')
+        ])
+        redisKeys = [...nextauthKeys, ...fabricKeys]
+        console.log('Debug - NextAuth Redis keys found:', nextauthKeys)
+        console.log('Debug - Fabric Redis keys found:', fabricKeys)
       } catch (error) {
         console.error('Debug - Error getting Redis keys:', error)
       }

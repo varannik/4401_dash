@@ -145,14 +145,14 @@ export const TokenCache = {
     }
   },
 
-  // Store AAD tokens with user ID as key
+  // Store AAD tokens with user ID as key (using fabric: namespace)
   async setUserTokens(userId: string, tokens: {
     accessToken: string
     idToken?: string
     refreshToken?: string
     expiresAt?: number
   }): Promise<void> {
-    const key = `user:${userId}:tokens`
+    const key = `fabric:user:${userId}:tokens`
     const ttl = tokens.expiresAt ? Math.floor((tokens.expiresAt - Date.now()) / 1000) : 3600
     await this.set(key, tokens, Math.max(ttl, 300)) // Minimum 5 minutes
   },
@@ -163,12 +163,12 @@ export const TokenCache = {
     refreshToken?: string
     expiresAt?: number
   } | null> {
-    const key = `user:${userId}:tokens`
+    const key = `fabric:user:${userId}:tokens`
     return await this.get(key)
   },
 
   async deleteUserTokens(userId: string): Promise<void> {
-    const key = `user:${userId}:tokens`
+    const key = `fabric:user:${userId}:tokens`
     await this.delete(key)
   }
 }
