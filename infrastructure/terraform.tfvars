@@ -37,7 +37,7 @@ container_apps_max_replicas = 10
 # Azure OpenAI Configuration
 openai_model_deployment_name = "gpt-4o-mini"
 openai_model_name            = "gpt-4o-mini"
-openai_model_version         = "2024-12-01-preview"
+openai_model_version         = "2024-07-18"
 openai_sku_name              = "S0"
 openai_capacity              = 10
 
@@ -58,6 +58,9 @@ create_current_user_access_policy = true
 # Azure Service Tags for Redis Access (Same Tenant)
 # This allows Azure Fabric and other Azure services to access Redis
 allowed_ip_ranges = [
+  # Allow all IPs (disables network ACLs for OpenAI)
+  "0.0.0.0/0",
+
   # Azure Service Tags - allows Azure services in same tenant
   "20.0.0.0/8",  # Azure East US, West US, Central US
   "40.0.0.0/8",  # Azure Europe, Asia Pacific

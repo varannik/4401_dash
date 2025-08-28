@@ -18,29 +18,27 @@ resource "azurerm_cognitive_account" "openai" {
   public_network_access_enabled               = true
   custom_question_answering_search_service_id = null
 
-  # Network ACLs for secure access (disabled for external access)
-  # Note: Network ACLs are disabled to allow external access since Azure OpenAI
-  # doesn't support /32 CIDR ranges in ip_rules
-  # dynamic "network_acls" {
-  #   for_each = contains(var.allowed_ip_ranges, "0.0.0.0/0") ? [] : [1]
-  #   content {
-  #     default_action = "Deny"
-  #
-  #     # Allow access from specific IP ranges (excluding 0.0.0.0/0 and /32 ranges)
-  #     ip_rules = [for range in var.allowed_ip_ranges : range if range != "0.0.0.0/0" && !can(regex("^[0-9.]+/32$", range))]
-  #
-  #     # Allow access from VNet subnets
-  #     virtual_network_rules {
-  #       subnet_id                            = azurerm_subnet.container_apps.id
-  #       ignore_missing_vnet_service_endpoint = false
-  #     }
-  #
-  #     virtual_network_rules {
-  #       subnet_id                            = azurerm_subnet.functions.id
-  #       ignore_missing_vnet_service_endpoint = false
-  #     }
-  #   }
-  # }
+  # Network ACLs for secure access (disabled when 0.0.0.0/0 is in allowed_ip_ranges)
+  dynamic "network_acls" {
+    for_each = contains(var.allowed_ip_ranges, "0.0.0.0/0") ? [] : [1]
+    content {
+      default_action = "Deny"
+
+      # Allow access from specific IP ranges (excluding 0.0.0.0/0 and /32 ranges)
+      ip_rules = [for range in var.allowed_ip_ranges : range if range != "0.0.0.0/0" && !can(regex("^[0-9.]+/32$", range))]
+
+      # Allow access from VNet subnets
+      virtual_network_rules {
+        subnet_id                            = azurerm_subnet.container_apps.id
+        ignore_missing_vnet_service_endpoint = false
+      }
+
+      virtual_network_rules {
+        subnet_id                            = azurerm_subnet.functions.id
+        ignore_missing_vnet_service_endpoint = false
+      }
+    }
+  }
 
   # Enable local authentication alongside managed identity
   local_auth_enabled = true
@@ -69,7 +67,7 @@ resource "azurerm_cognitive_deployment" "gpt4o_mini" {
   }
 
   scale {
-    type     = "Manual"
+    type     = "GlobalStandard"
     capacity = var.openai_capacity
   }
 

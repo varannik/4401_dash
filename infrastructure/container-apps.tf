@@ -60,7 +60,7 @@ resource "azurerm_container_app" "fastapi" {
 
       env {
         name  = "AZURE_OPENAI_API_VERSION"
-        value = "2024-02-01"
+        value = "2024-12-01-preview"
       }
 
       env {
