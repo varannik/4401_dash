@@ -1,4 +1,4 @@
-import cn from "classnames";
+import { cn } from "@/lib/utils";
 import styles from "./Bento.module.sass";
 
 type BentoProps = {

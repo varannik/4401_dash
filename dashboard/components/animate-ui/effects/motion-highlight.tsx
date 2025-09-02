@@ -98,13 +98,15 @@ type UncontrolledChildrenModeMotionHighlightProps<T extends string> =
     children: React.ReactElement | React.ReactElement[];
   };
 
-type MotionHighlightProps<T extends string> = React.ComponentProps<'div'> &
+type MotionHighlightProps<T extends string> = Omit<React.ComponentProps<'div'>, 'ref'> &
   (
     | ControlledParentModeMotionHighlightProps<T>
     | ControlledChildrenModeMotionHighlightProps<T>
     | UncontrolledParentModeMotionHighlightProps<T>
     | UncontrolledChildrenModeMotionHighlightProps<T>
-  );
+  ) & {
+  ref?: React.Ref<HTMLDivElement>;
+};
 
 function MotionHighlight<T extends string>({
   ref,
@@ -325,7 +327,7 @@ function getNonOverridingDataAttributes(
   );
 }
 
-type ExtendedChildProps = React.ComponentProps<'div'> & {
+type ExtendedChildProps = Omit<React.ComponentProps<'div'>, 'ref'> & {
   id?: string;
   ref?: React.Ref<HTMLElement>;
   'data-active'?: string;
@@ -335,7 +337,7 @@ type ExtendedChildProps = React.ComponentProps<'div'> & {
   'data-slot'?: string;
 };
 
-type MotionHighlightItemProps = React.ComponentProps<'div'> & {
+type MotionHighlightItemProps = Omit<React.ComponentProps<'div'>, 'ref'> & {
   children: React.ReactElement;
   id?: string;
   value?: string;
@@ -346,6 +348,7 @@ type MotionHighlightItemProps = React.ComponentProps<'div'> & {
   exitDelay?: number;
   asChild?: boolean;
   forceUpdateBounds?: boolean;
+  ref?: React.Ref<HTMLDivElement>;
 };
 
 function MotionHighlightItem({

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { 
@@ -49,7 +49,7 @@ interface ExpandableHeaderProps {
   onToggle: () => void
 }
 
-export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({ 
+const ExpandableHeaderContent: React.FC<ExpandableHeaderProps> = ({ 
   isExpanded, 
   onToggle
 }) => {
@@ -298,5 +298,146 @@ export const ExpandableHeader: React.FC<ExpandableHeaderProps> = ({
         </div>
       </div>
     </div>
+  )
+}
+
+const ExpandableHeaderFallback: React.FC<ExpandableHeaderProps> = ({ 
+  isExpanded, 
+  onToggle
+}) => {
+  const pathname = usePathname()
+  const headerRef = React.useRef<HTMLDivElement>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [isUpdating, setIsUpdating] = useState(false)
+  
+  // Anomaly store
+  const { unreadCount, isDrawerOpen, toggleDrawer } = useAnomalyStore()
+
+  // Handle click outside to close expanded header
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isExpanded && headerRef.current && !headerRef.current.contains(event.target as Node)) {
+        onToggle()
+      }
+    }
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isExpanded, onToggle])
+
+  // Simulate data updates every 10 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsUpdating(true)
+      
+      // Simulate network delay
+      setTimeout(() => {
+        setLastUpdate(new Date())
+        setIsUpdating(false)
+      }, 200)
+    }, 10000) // Update every 10 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const navigationItems = [
+    { icon: LayoutDashboard, label: 'Real Time', href: '/dashboard/realtime' },
+    { icon: BarChart2, label: 'Analytics', href: '/dashboard/analytics' },
+    { icon: FolderOpen, label: 'Projects', href: '/dashboard/projects' },
+    { icon: Users, label: 'Team', href: '/dashboard/team' },
+    { icon: Settings, label: 'Settings', href: '/dashboard/settings' },
+    { icon: Home, label: 'Home', href: '/' },
+  ]
+
+  // Show a simplified header without tab-dependent content
+  return (
+    <div 
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 shadow-lg transition-all duration-300 ${
+        isExpanded ? 'h-screen' : 'h-20'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onToggle}
+            className="text-white hover:bg-white/10 p-2 rounded-lg transition-colors"
+          >
+            {isExpanded ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          
+          <div className="flex items-center gap-6">
+            <div className="text-white">
+              <h1 className="text-xl font-bold">CCaaS Dashboard</h1>
+              <p className="text-xs text-white/70">Loading...</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
+            <StatusIndicator type="success" label="Online" />
+            <StatusIndicator type="info" label="Monitoring" />
+          </div>
+          
+          <AnomalyIcon 
+            onClick={toggleDrawer}
+            isOpen={isDrawerOpen}
+            unreadCount={unreadCount}
+          />
+          
+          <AuthButton />
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="absolute top-20 left-0 right-0 bottom-0 bg-gradient-to-br from-slate-900/95 via-purple-900/95 to-slate-900/95 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full flex flex-col">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white">Navigation</h3>
+                <div className="space-y-2">
+                  {navigationItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onToggle}
+                      className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                        pathname === item.href 
+                          ? 'bg-white/20 text-white' 
+                          : 'text-white/70 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      <item.icon size={20} />
+                      <span className="font-medium">{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-4 sm:col-span-2">
+                <h3 className="text-lg font-semibold text-white">Account</h3>
+                <div className="p-4 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 transition-colors cursor-pointer">
+                  <UserProfileButton />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export const ExpandableHeader: React.FC<ExpandableHeaderProps> = (props) => {
+  return (
+    <Suspense fallback={<ExpandableHeaderFallback {...props} />}>
+      <ExpandableHeaderContent {...props} />
+    </Suspense>
   )
 } 

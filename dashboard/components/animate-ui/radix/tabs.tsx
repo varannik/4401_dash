@@ -22,9 +22,10 @@ function Tabs({ className, ...props }: TabsProps) {
   );
 }
 
-type TabsListProps = React.ComponentProps<typeof TabsPrimitive.List> & {
+type TabsListProps = Omit<React.ComponentProps<typeof TabsPrimitive.List>, 'ref'> & {
   activeClassName?: string;
   transition?: Transition;
+  ref?: React.Ref<HTMLDivElement>;
 };
 
 function TabsList({

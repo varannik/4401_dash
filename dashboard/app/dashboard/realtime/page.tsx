@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProtectedRoute from "@/components/auth/protected-route"
 import DashboardLayout from "@/components/layout/mainLayoutDash"
@@ -10,7 +11,7 @@ import {
   LiquidTracerTab 
 } from "../../../components/dashboard/tabs"
 
-export default function MonitoringPage() {
+function TabContent() {
   const searchParams = useSearchParams()
   const activeTab = searchParams.get('tab') || 'plant-overview'
 
@@ -29,10 +30,20 @@ export default function MonitoringPage() {
     }
   }
 
+  return <>{renderTabContent()}</>
+}
+
+function TabFallback() {
+  return <PlantOverviewTab />
+}
+
+export default function MonitoringPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        {renderTabContent()}
+        <Suspense fallback={<TabFallback />}>
+          <TabContent />
+        </Suspense>
       </DashboardLayout>
     </ProtectedRoute>
   )
